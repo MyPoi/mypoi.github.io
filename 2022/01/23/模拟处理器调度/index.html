@@ -1,0 +1,403 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>进程调度算法 | MyPoi</title><meta name="keywords" content="java,操作系统,进程调度"><meta name="author" content="MyPoi"><meta name="copyright" content="MyPoi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="进程调度算法目的 在采用多道程序设计的系统中，往往有若干个进程同时处于就绪状态。当就绪进程个数大于处理器数时，就必须依照某种策略来决定哪些进程优先占用处理器。本实习模拟在单处理器情况下的处理器调度，帮助学生加深了解处理器调度的工作。  题目 设计一个按优先数调度算法实现处理器调度的程序。  提示 假定系统有五个进程，每一个进程用一个进程控制块PCB来代表，进程控制块的格式为：     进程名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程调度算法">
+<meta property="og:url" content="http://example.com/2022/01/23/%E6%A8%A1%E6%8B%9F%E5%A4%84%E7%90%86%E5%99%A8%E8%B0%83%E5%BA%A6/index.html">
+<meta property="og:site_name" content="MyPoi">
+<meta property="og:description" content="进程调度算法目的 在采用多道程序设计的系统中，往往有若干个进程同时处于就绪状态。当就绪进程个数大于处理器数时，就必须依照某种策略来决定哪些进程优先占用处理器。本实习模拟在单处理器情况下的处理器调度，帮助学生加深了解处理器调度的工作。  题目 设计一个按优先数调度算法实现处理器调度的程序。  提示 假定系统有五个进程，每一个进程用一个进程控制块PCB来代表，进程控制块的格式为：     进程名">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/yoyosave/blog-image/raw/master/imgs/bg.png">
+<meta property="article:published_time" content="2022-01-23T02:20:01.316Z">
+<meta property="article:modified_time" content="2022-01-23T02:20:01.316Z">
+<meta property="article:author" content="MyPoi">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="进程调度">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/yoyosave/blog-image/raw/master/imgs/bg.png"><link rel="shortcut icon" href="/img/1.png"><link rel="canonical" href="http://example.com/2022/01/23/%E6%A8%A1%E6%8B%9F%E5%A4%84%E7%90%86%E5%99%A8%E8%B0%83%E5%BA%A6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: MyPoi","link":"链接: ","source":"来源: MyPoi","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '进程调度算法',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-01-23 02:20:01'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const fontSizeVal = saveToLocal.get('global-font-size')
+    if (fontSizeVal !== undefined) {
+      document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+    }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    document.addEventListener('pjax:complete', detectApple)})(window)</script><link rel="stylesheet" href="/css/background.css"><script src="/js/biaoti.js"></script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 相册</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gitee.com/yoyosave/blog-image/raw/master/imgs/bg.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">MyPoi</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 相册</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">进程调度算法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-01-23T02:20:01.316Z" title="发表于 2022-01-23 02:20:01">2022-01-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-01-23T02:20:01.316Z" title="更新于 2022-01-23 02:20:01">2022-01-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/java/">java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="进程调度算法"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="进程调度算法"><a href="#进程调度算法" class="headerlink" title="进程调度算法"></a>进程调度算法</h1><h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><blockquote>
+<p>在采用多道程序设计的系统中，往往有若干个进程同时处于就绪状态。当就绪进程个数大于处理器数时，就必须依照某种策略来决定哪些进程优先占用处理器。本实习模拟在单处理器情况下的处理器调度，帮助学生加深了解处理器调度的工作。</p>
+</blockquote>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><blockquote>
+<p>设计一个按优先数调度算法实现处理器调度的程序。</p>
+</blockquote>
+<h3 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h3><ol>
+<li>假定系统有五个进程，每一个进程用一个进程控制块PCB来代表，进程控制块的格式为：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">进程名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">指针</td>
+</tr>
+<tr>
+<td align="center">要求运行时间</td>
+</tr>
+<tr>
+<td align="center">优先数</td>
+</tr>
+<tr>
+<td align="center">状态</td>
+</tr>
+</tbody></table>
+<p>​    其中，进程名——作为进程的标识，假设五个进程的进程名分别为P1，P2，P3，P4，P5。</p>
+<p>​    指针——按优先数的大小把五个进程连成队列，用指针指出下一个进程的进程控制块的首地址，最后一个进程中的指针为“0”。</p>
+<p>​    要求运行时间——假设进程需要运行的单位时间数。</p>
+<p>​    优先数——赋予进程的优先数，调度时总是选取优先数大的进程先执行。</p>
+<p>​    状态——可假设有两种状态，“就绪”状态和“结束”状态。五个进程的初始状态都为“就绪”，用“R”表示，当一个进程运行结束后，它的状态为“结束”，用“E”表示。</p>
+<ol start="2">
+<li><p>在每次运行你所设计的处理器调度程序之前，为每个进程任意确定它的“优先数”和“要求运行时间”。</p>
+</li>
+<li><p>为了调度方便，把五个进程按给定的优先数从大到小连成队列。用一单元指出队首进程，用指针指出队列的连接情况。例：</p>
+</li>
+</ol>
+<p> 队首标志</p>
+<p>​     K2  </p>
+<table>
+<thead>
+<tr>
+<th>K1</th>
+<th>P1</th>
+<th>K2</th>
+<th>P2</th>
+<th>K3</th>
+<th>P3</th>
+<th>K4</th>
+<th>P4</th>
+<th>K5</th>
+<th>P5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>0</td>
+<td></td>
+<td>K4</td>
+<td></td>
+<td>K5</td>
+<td></td>
+<td>K3</td>
+<td></td>
+<td>K1</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td></td>
+<td>3</td>
+<td></td>
+<td>1</td>
+<td></td>
+<td>2</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr>
+<td></td>
+<td>1</td>
+<td></td>
+<td>5</td>
+<td></td>
+<td>3</td>
+<td></td>
+<td>4</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr>
+<td></td>
+<td>R</td>
+<td></td>
+<td>R</td>
+<td></td>
+<td>R</td>
+<td></td>
+<td>R</td>
+<td></td>
+<td>R</td>
+</tr>
+<tr>
+<td></td>
+<td>PCB1</td>
+<td></td>
+<td>PCB2</td>
+<td></td>
+<td>PCB3</td>
+<td></td>
+<td>PCB4</td>
+<td></td>
+<td>PCB5</td>
+</tr>
+</tbody></table>
+<ol start="4">
+<li>处理器调度总是选队首进程运行。采用动态改变优先数的办法，进程每运行一次优先数就减“1”。由于本实习是模拟处理器调度，所以，对被选中的进程并不实际的启动运行，而是执行：<ul>
+<li>优先数-1</li>
+<li>要求运行时间-1</li>
+</ul>
+</li>
+</ol>
+<p>​    来模拟进程的一次运行。</p>
+<p>​    提醒注意的是：在实际的系统中，当一个进程被选中运行时，必须恢复进程的现场，让它占有处理器运行，直到出现等待事件或运行结束。在这里省去了这些工作。</p>
+<ol start="5">
+<li><p>进程运行一次后，若要求运行时间¹0，则再将它加入队列（按优先数大小插入，且置队首标志）；若要求运行时间=0，则把它的状态修改成“结束”（E），且退出队列。</p>
+</li>
+<li><p>若“就绪”状态的进程队列不为空，则重复上面（4）和（5）的步骤，直到所有进程都成为“结束”状态。</p>
+</li>
+<li><p>在所设计的程序中应有显示或打印语句，能显示或打印每次被选中进程的进程名以及运行一次后进程队列的变化。</p>
+</li>
+<li><p>为五个进程任意确定一组“优先数”和“要求运行时间”，启动所设计的处理器调度程序，显示或打印逐次被选中进程的进程名以及进程控制块的动态变化过程。</p>
+</li>
+</ol>
+<h2 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h2><h3 id="定义进程类"><a href="#定义进程类" class="headerlink" title="定义进程类"></a>定义进程类</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Pcb</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> time;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> pri;</span><br><span class="line">    <span class="keyword">public</span> String state = <span class="string">&quot;R&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Pcb</span><span class="params">(String name, <span class="keyword">int</span> time, <span class="keyword">int</span> pri)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.time = time;</span><br><span class="line">        <span class="keyword">this</span>.pri = pri;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;名字=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, 运行时间=&quot;</span> + time +</span><br><span class="line">                <span class="string">&quot;, 优先级=&quot;</span> + pri +</span><br><span class="line">                <span class="string">&quot;, 状态=&#x27;&quot;</span> + state + <span class="string">&#x27;\&#x27;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用来存放进程名，优先级，运行时间，进程状态</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addrun</span><span class="params">(List&lt;Pcb&gt; pcbs, List&lt;Integer&gt; list_i)</span> </span>&#123;</span><br><span class="line">     pcbs.get(list_i.get(<span class="number">0</span>)).pri -= <span class="number">1</span>;</span><br><span class="line">     pcbs.get(list_i.get(<span class="number">0</span>)).time -= <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">         <span class="keyword">if</span> (pcbs.get(i).time &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">             pcbs.get(i).state = <span class="string">&quot;E&quot;</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;详细：&quot;</span>);</span><br><span class="line">    System.out.println(pcbs.get(list_i.get(<span class="number">0</span>)).toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调度算法的主体，每一次找最大优先级，找到后，优先级减一，运行时间减一</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//list_i存放最大优先级的下标，如果列表中的元素有多个就说明最大优先级有多个</span></span><br><span class="line"><span class="keyword">if</span> (list_i.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pcbs.get(list_i.get(<span class="number">0</span>)).time &lt; pcbs.get(list_i.get(<span class="number">1</span>)).time) &#123;</span><br><span class="line">                addrun(pcbs, list_i);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                pcbs.get(list_i.get(<span class="number">1</span>)).pri -= <span class="number">1</span>;</span><br><span class="line">                pcbs.get(list_i.get(<span class="number">1</span>)).time -= <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (pcbs.get(i).time &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">                        pcbs.get(i).state = <span class="string">&quot;E&quot;</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">&quot;详细：&quot;</span>);</span><br><span class="line">                System.out.println(pcbs.get(list_i.get(<span class="number">1</span>)).toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            addrun(pcbs, list_i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;全局：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">            System.out.println(pcbs.get(i).toString());</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然也有同时存在多个最大优先级的情况，当遇到这种情况的时候我们要对其进行运行时间的判断，运行时间短的优先，并且如果运行时间相同，我们就先来先执行</p>
+<p>全部源码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestPro</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;Pcb&gt; pcbs = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        pcbs.add(<span class="keyword">new</span> Pcb(<span class="string">&quot;p1&quot;</span>, <span class="number">2</span>, <span class="number">1</span>));</span><br><span class="line">        pcbs.add(<span class="keyword">new</span> Pcb(<span class="string">&quot;p2&quot;</span>, <span class="number">3</span>, <span class="number">5</span>));</span><br><span class="line">        pcbs.add(<span class="keyword">new</span> Pcb(<span class="string">&quot;p3&quot;</span>, <span class="number">1</span>, <span class="number">3</span>));</span><br><span class="line">        pcbs.add(<span class="keyword">new</span> Pcb(<span class="string">&quot;p4&quot;</span>, <span class="number">2</span>, <span class="number">4</span>));</span><br><span class="line">        pcbs.add(<span class="keyword">new</span> Pcb(<span class="string">&quot;p5&quot;</span>, <span class="number">4</span>, <span class="number">2</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> sum_runtime = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">            sum_runtime += pcbs.get(i).time;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Scanner sc= <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="keyword">while</span> (sum_runtime &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> m;</span><br><span class="line">            System.out.println(<span class="string">&quot;是否插入数据（0.不插入,1.插入）&quot;</span>);</span><br><span class="line">            m = sc.nextInt();</span><br><span class="line">            <span class="keyword">if</span> (m == <span class="number">1</span>)&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;请输入进程名&quot;</span>);</span><br><span class="line">                String str = sc.next();</span><br><span class="line">                System.out.println(<span class="string">&quot;请输入运行时间&quot;</span>);</span><br><span class="line">                <span class="keyword">int</span> runtime = sc.nextInt();</span><br><span class="line">                System.out.println(<span class="string">&quot;请输入优先级&quot;</span>);</span><br><span class="line">                <span class="keyword">int</span> pris = sc.nextInt();</span><br><span class="line">                pcbs.add(<span class="keyword">new</span> Pcb(str, runtime, pris));</span><br><span class="line">                sum_runtime += runtime;</span><br><span class="line">            &#125;</span><br><span class="line">            run(pcbs);</span><br><span class="line">            sum_runtime--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(List&lt;Pcb&gt; pcbs)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//设置优先级</span></span><br><span class="line">        <span class="keyword">int</span> max = -<span class="number">100</span>;</span><br><span class="line">        <span class="comment">//设置存放优先级的列表</span></span><br><span class="line">        List&lt;Integer&gt; list_i = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">        <span class="comment">//设置存放运行时间的</span></span><br><span class="line"><span class="comment">//        List&lt;Integer&gt; list_time = new ArrayList&lt;Integer&gt;();</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">           <span class="keyword">if</span> (pcbs.get(i).state.equals(<span class="string">&quot;R&quot;</span>))&#123;</span><br><span class="line">               <span class="keyword">if</span> (max &lt; pcbs.get(i).pri) &#123;</span><br><span class="line">                   max = pcbs.get(i).pri;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pcbs.get(i).state.equals(<span class="string">&quot;R&quot;</span>))&#123;</span><br><span class="line">                <span class="keyword">if</span> (max == pcbs.get(i).pri) &#123;</span><br><span class="line">                    list_i.add(i);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (list_i.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pcbs.get(list_i.get(<span class="number">0</span>)).time &lt; pcbs.get(list_i.get(<span class="number">1</span>)).time) &#123;</span><br><span class="line">                addrun(pcbs, list_i);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                pcbs.get(list_i.get(<span class="number">1</span>)).pri -= <span class="number">1</span>;</span><br><span class="line">                pcbs.get(list_i.get(<span class="number">1</span>)).time -= <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (pcbs.get(i).time &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">                        pcbs.get(i).state = <span class="string">&quot;E&quot;</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">&quot;详细：&quot;</span>);</span><br><span class="line">                System.out.println(pcbs.get(list_i.get(<span class="number">1</span>)).toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            addrun(pcbs, list_i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;全局：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">            System.out.println(pcbs.get(i).toString());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addrun</span><span class="params">(List&lt;Pcb&gt; pcbs, List&lt;Integer&gt; list_i)</span> </span>&#123;</span><br><span class="line">        pcbs.get(list_i.get(<span class="number">0</span>)).pri -= <span class="number">1</span>;</span><br><span class="line">        pcbs.get(list_i.get(<span class="number">0</span>)).time -= <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pcbs.size(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pcbs.get(i).time &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">                pcbs.get(i).state = <span class="string">&quot;E&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;详细：&quot;</span>);</span><br><span class="line">        System.out.println(pcbs.get(list_i.get(<span class="number">0</span>)).toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">MyPoi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2022/01/23/%E6%A8%A1%E6%8B%9F%E5%A4%84%E7%90%86%E5%99%A8%E8%B0%83%E5%BA%A6/">http://example.com/2022/01/23/%E6%A8%A1%E6%8B%9F%E5%A4%84%E7%90%86%E5%99%A8%E8%B0%83%E5%BA%A6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">MyPoi</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java/">java</a><a class="post-meta__tags" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a><a class="post-meta__tags" href="/tags/%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/">进程调度</a></div><div class="post_share"><div class="social-share" data-image="https://gitee.com/yoyosave/blog-image/raw/master/imgs/bg.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/01/23/hello-world/"><img class="prev-cover" src="https://i.xinger.ink/images.php?ed593a96" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Hello World</div></div></a></div><div class="next-post pull-right"><a href="/2022/01/23/%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/MyPoi/cloudimg/img27.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">学生宿舍管理系统</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/01/23/Jdbc%E8%B5%B7%E6%AD%A5/" title="Jdbc的起步"><img class="cover" src="https://cdn.jsdelivr.net/gh/MyPoi/cloudimg/img10.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-23</div><div class="title">Jdbc的起步</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">进程调度算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E7%9A%84"><span class="toc-number">1.1.</span> <span class="toc-text">目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE"><span class="toc-number">1.2.</span> <span class="toc-text">题目</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA"><span class="toc-number">1.2.1.</span> <span class="toc-text">提示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E8%BF%9B%E7%A8%8B%E7%B1%BB"><span class="toc-number">1.3.1.</span> <span class="toc-text">定义进程类</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2022 By MyPoi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://bilibili/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="6764762258" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" muted></div><script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/noSomeKey.js"></script><script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/sakura.js"></script><script src='https://cdn.jsdelivr.net/gh/sviptzk/HexoStaticFile@latest/Hexo/js/mouse_snow.min.js'></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config-diff',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.removeEventListener('scroll', window.tocScrollFn)
+  window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
